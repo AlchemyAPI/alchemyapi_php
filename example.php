@@ -279,7 +279,7 @@
 	echo PHP_EOL;
 	echo PHP_EOL;
 	echo '############################################', PHP_EOL;
-	echo '#   Feed Dection Example                   #', PHP_EOL;
+	echo '#   Feed Detection Example                   #', PHP_EOL;
 	echo '############################################', PHP_EOL;
 	echo PHP_EOL;
 	echo PHP_EOL;
@@ -301,6 +301,42 @@
 	} else {
 		echo 'Error in the feed detection call: ', $response['statusInfo'];
 	}
+	
+	echo PHP_EOL;
+	echo PHP_EOL;
+	echo PHP_EOL;
+	echo '############################################', PHP_EOL;
+	echo '#      Text Extraction Example             #', PHP_EOL;
+	echo '############################################', PHP_EOL;
+	echo PHP_EOL;
+	echo PHP_EOL;
+	
+	echo 'Processing url: ', $demo_url, PHP_EOL;
+	echo PHP_EOL;
+	
+	echo "----The following call will render e.g. apostrophes as â€tm";
+	echo "----Thus the text is not being rendered properly";
+	$response = $alchemyapi->text_clean('url', $demo_url, null);
+	if ($response['status'] == 'OK') {
+		
+		print_r($response['text']);
+		
+	} else {
+		echo 'Error in the feed detection call: ', $response['statusInfo'];
+	}
+	
+	echo "----By changing the encoding to UTF-8 through the following function,";
+	echo "----we are able to fix this";
+	//For more info: http://stackoverflow.com/questions/4583369/an-apostrophe-is-rendering-as-atm-what-php-function-will-display-it-as-som
+	$response = $alchemyapi->text_clean('url', $demo_url, null);
+	if ($response['status'] == 'OK') {
+		
+		print_r(mb_convert_encoding($response['text'], "HTML-ENTITIES", "UTF-8"));
+		
+	} else {
+		echo 'Error in the feed detection call: ', $response['statusInfo'];
+	}
+	
 
 
 	echo PHP_EOL;
