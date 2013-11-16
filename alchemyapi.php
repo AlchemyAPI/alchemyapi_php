@@ -79,6 +79,7 @@ class AlchemyAPI {
 		$this->_ENDPOINTS['feeds']['html'] = '/html/HTMLGetFeedLinks';
 		$this->_ENDPOINTS['microformats']['url']  = '/url/URLGetMicroformatData';
 		$this->_ENDPOINTS['microformats']['html'] = '/html/HTMLGetMicroformatData';
+		$this->_ENDPOINTS['apikeyinfo']['info'] = '/info/GetAPIKeyInfo';
 	}
 
 
@@ -495,7 +496,23 @@ class AlchemyAPI {
 		return $this->analyze($this->_ENDPOINTS['microformats'][$flavor], $options);
 	}
 
-
+	/**
+	  *	Gets information about an API Key, including the daily transaction limit and 
+	  * 	consumed transactions.
+	  *	
+	  *	INPUT:
+	  *	options -> various parameters that can be used to adjust how the API works, see below for more info on the available options.
+	  *	
+	  *	Available Options:
+	  *	none
+	  *
+	  *	OUTPUT:
+	  *	The response, already converted from JSON to a PHP object. 
+	*/
+	public function apikeyinfo($options) {
+		return $this->analyze($this->_ENDPOINTS['apikeyinfo']['info'], $options);
+	}
+	
 	/**
 	  *	HTTP Request wrapper that is called by the endpoint functions. This function is not intended to be called through an external interface. 
 	  *	It makes the call, then converts the returned JSON string into a PHP object. 
