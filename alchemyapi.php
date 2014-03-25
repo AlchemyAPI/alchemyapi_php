@@ -21,7 +21,7 @@ class AlchemyAPI {
 	
 	private $_api_key;
 	private $_ENDPOINTS;
-    private $_BASE_URL = 'http://access.alchemyapi.com/calls';
+	private $_BASE_URL = 'http://access.alchemyapi.com/calls';
 
 
 	/** 
@@ -96,6 +96,12 @@ class AlchemyAPI {
 		$this->_ENDPOINTS['feeds']['html'] = '/html/HTMLGetFeedLinks';
 		$this->_ENDPOINTS['microformats']['url']  = '/url/URLGetMicroformatData';
 		$this->_ENDPOINTS['microformats']['html'] = '/html/HTMLGetMicroformatData';
+		$this->_ENDPOINTS['combined']['url'] = '/url/URLGetCombinedData';
+		$this->_ENDPOINTS['combined']['text'] = '/text/TextGetCombinedData';
+		$this->_ENDPOINTS['image']['url'] = '/url/URLGetImage';
+		$this->_ENDPOINTS['taxonomy']['url'] = '/url/URLGetRankedTaxonomy';
+		$this->_ENDPOINTS['taxonomy']['html'] = '/html/HTMLGetRankedTaxonomy';
+		$this->_ENDPOINTS['taxonomy']['text'] = '/text/TextGetRankedTaxonomy';
 	}
 
 
@@ -511,7 +517,161 @@ class AlchemyAPI {
 		$options[$flavor] = $data;
 		return $this->analyze($this->_ENDPOINTS['microformats'][$flavor], $options);
 	}
+	/*
+	        Extracts main image from a URL
+	 	
+	 	INPUT:
+	 	flavor -> which version of the call (url only currently).
+	 	data -> URL to analyze
+	 	options -> various parameters that can be used to adjust how the API works, 
+	 	see below for more info on the available options.
+		
+		Available Options:
+		extractMode -> 
+		     trust-metadata  :  (less CPU intensive, less accurate)
+		     always-infer    :  (more CPU intensive, more accurate)
+		OUTPUT:
+		The response, already converted from JSON to a Python object. 
+	*/
+	public function imageExtraction($flavor, $data, $options) {
+	  	//Make sure this request supports the flavor
+		if (!array_key_exists($flavor, $this->_ENDPOINTS['image'])) {
+			return array('status'=>'ERROR','statusInfo'=>'Image Extraction parsing for ' . $flavor . ' not available');
+		}
 
+		//Add the data to the options and analyze
+		$options[$flavor] = $data;
+		return $this->analyze($this->_ENDPOINTS['image'][$flavor], $options);
+	}
+	
+	/*
+		Taxonomy classification operations.
+
+		INPUT:
+		flavor -> which version of the call, i.e.  url or html.
+		data -> the data to analyze, either the the url or html code.
+		options -> various parameters that can be used to adjust how the API works, see below for more info on the available options.
+
+		
+		Available Options:
+		showSourceText  -> 
+		    include the original 'source text' the taxonomy categories were extracted from within the API response
+		    Possible values:
+		        1 - enabled
+			0 - disabled (default) 
+
+		sourceText ->
+		    where to obtain the text that will be processed by this API call.
+		    
+		    AlchemyAPI supports multiple modes of text extraction:
+		        web page cleaning (removes ads, navigation links, etc.), raw text extraction 
+			(processes all web page text, including ads / nav links), visual constraint queries, and XPath queries. 
+
+		    Possible values:
+		        cleaned_or_raw  : cleaning enabled, fallback to raw when cleaning produces no text (default)
+			cleaned         : operate on 'cleaned' web page text (web page cleaning enabled)
+			raw             : operate on raw web page text (web page cleaning disabled)
+			cquery          : operate on the results of a visual constraints query 
+                                          Note: The 'cquery' http argument must also be set to a valid visual constraints query.
+			xpath           : operate on the results of an XPath query 
+                                          Note: The 'xpath' http argument must also be set to a valid XPath query.
+
+		cquery ->
+		    a visual constraints query to apply to the web page.
+		
+		xpath ->
+		    an XPath query to apply to the web page.
+
+		baseUrl ->
+		    rel-tag output base http url (must be uri-argument encoded)
+
+		OUTPUT:
+		The response, already converted from JSON to a Python object. 
+			  
+	 */
+	public function taxonomy($flavor, $data, $options) {	
+	  //Make sure this request supports the flavor	
+	  if (!array_key_exists($flavor, $this->_ENDPOINTS['taxonomy'])) {
+	    return array('status'=>'ERROR','statusInfo'=>'taxonomy parsing for ' . $flavor . ' not available');	
+	  }
+	  
+	  //Add the data to the options and analyze
+	  $options[$flavor] = $data;
+	  return $this->analyze($this->_ENDPOINTS['taxonomy'][$flavor], $options);
+	}	
+	
+	/*
+		Combined call for page-image, entity, keyword, title, author, taxonomy,  concept.
+
+		INPUT:
+		flavor -> which version of the call, i.e.  url or html.
+		data -> the data to analyze, either the the url or html code.
+		options -> various parameters that can be used to adjust how the API works, see below for more info on the available options.
+
+		Available Options:
+		extract -> 
+		    Possible values: page-image, entity, keyword, title, author, taxonomy,  concept
+		    default        : entity, keyword, taxonomy,  concept
+		
+		disambiguate -> 
+		    disambiguate detected entities
+		    Possible values:
+		        1 : enabled (default)
+                        0 : disabled
+		    
+		linkedData ->
+		    include Linked Data content links with disambiguated entities
+		    Possible values :
+		        1 : enabled (default)
+                        0 : disabled
+
+		coreference ->
+		    resolve he/she/etc coreferences into detected entities
+		    Possible values:
+		        1 : enabled (default)
+                        0 : disabled
+		
+		quotations -> 
+		    enable quotations extraction
+		    Possible values:
+		        1 : enabled
+                        0 : disabled (default)
+		
+		sentiment ->
+		    enable entity-level sentiment analysis
+		    Possible values:
+		        1 : enabled
+                        0 : disabled (default)
+		
+		showSourceText -> 
+		    include the original 'source text' the entities were extracted from within the API response
+		    Possible values:
+		        1 : enabled
+                        0 : disabled (default)
+		    
+		maxRetrieve ->
+		    maximum number of named entities to extract
+		    default : 50
+
+		baseUrl -> 
+		    rel-tag output base http url
+		    
+		
+		OUTPUT:
+		The response, already converted from JSON to a Python object. 	 
+
+	 */
+	public function combined($flavor, $data, $options) {
+	  //Make sure this request supports the flavor
+	  if (!array_key_exists($flavor, $this->_ENDPOINTS['combined'])) {
+	    return array('status'=>'ERROR','statusInfo'=>'combined parsing for ' . $flavor . ' not available'	);
+	  }
+	  
+	  //Add the data to the options and analyze
+	  $options[$flavor] = $data;
+	  return $this->analyze($this->_ENDPOINTS['combined'][$flavor], $options);
+	}	
+	
 
 	/**
 	  *	HTTP Request wrapper that is called by the endpoint functions. This function is not intended to be called through an external interface. 
@@ -558,13 +718,15 @@ class AlchemyAPI {
   * OUTPUT:
   * none
 */  
-if (php_sapi_name() == 'cli' && isset($argv) && count($argv) == 2) {
-	if (strlen($argv[1]) == 40) {
-		file_put_contents('api_key.txt',$argv[1]);
-		echo 'Key: ' . $argv[1] . ' successfully written to api_key.txt', PHP_EOL;
-		echo 'You are now ready to start using AlchemyAPI. For example, run: php example.php', PHP_EOL;
-	} else {
-		echo 'Invalid key! Make sure it is 40 characters in length', PHP_EOL;
+if (php_sapi_name() == 'cli') {
+	if (count($argv) == 2) {
+		if (strlen($argv[1]) == 40) {
+			file_put_contents('api_key.txt',$argv[1]);
+			echo 'Key: ' . $argv[1] . ' successfully written to api_key.txt', PHP_EOL;
+			echo 'You are now ready to start using AlchemyAPI. For example, run: php example.php', PHP_EOL;
+		} else {
+			echo 'Invalid key! Make sure it is 40 characters in length', PHP_EOL;
+		}
 	}
 }
 

@@ -444,4 +444,107 @@
 	echo PHP_EOL;
 	echo PHP_EOL;
 
+	echo PHP_EOL;
+	echo PHP_EOL;
+	echo PHP_EOL;
+	echo '############################################', PHP_EOL;
+	echo '#   Image Extraction Example               #', PHP_EOL;
+	echo '############################################', PHP_EOL;
+	echo PHP_EOL;
+	echo PHP_EOL;
+	
+	echo 'Processing url: ', $demo_url, PHP_EOL;
+	echo PHP_EOL;
+
+	$response = $alchemyapi->imageExtraction('url',$demo_url, null);
+
+	if ($response['status'] == 'OK') {
+		echo '## Response Object ##', PHP_EOL;
+		echo print_r($response);
+
+		echo PHP_EOL;
+		echo '## Image ##', PHP_EOL;
+		echo 'Image: ', $response['image'], PHP_EOL;
+	} else {
+		echo 'Error in the image extraction call: ', $response['statusInfo'];
+	}
+	
+	
+	echo PHP_EOL;
+	echo PHP_EOL;
+
+	echo PHP_EOL;
+	echo PHP_EOL;
+	echo PHP_EOL;
+	echo '############################################', PHP_EOL;
+	echo '#   taxonomy Example                       #', PHP_EOL;
+	echo '############################################', PHP_EOL;
+	echo PHP_EOL;
+	echo PHP_EOL;
+	
+	echo 'Processing text: ', $demo_text, PHP_EOL;
+	echo PHP_EOL;
+
+	$response = $alchemyapi->taxonomy('text',$demo_text, null);
+
+	if ($response['status'] == 'OK') {
+		echo '## Response Object ##', PHP_EOL;
+		echo print_r($response);
+
+		echo PHP_EOL;
+		echo '## Categories ##', PHP_EOL;
+		foreach ($response['taxonomy'] as $category) {
+		  echo $category['label'], ' : ', $category['score'], PHP_EOL;
+		}
+	} else {
+		echo 'Error in the taxonomy call: ', $response['statusInfo'];
+	}
+		
+	echo PHP_EOL;
+	echo PHP_EOL;
+
+	echo PHP_EOL;
+	echo PHP_EOL;
+	echo PHP_EOL;
+	echo '############################################', PHP_EOL;
+	echo '#   combined Example                       #', PHP_EOL;
+	echo '############################################', PHP_EOL;
+	echo PHP_EOL;
+	echo PHP_EOL;
+	
+	echo 'Processing text: ', $demo_text, PHP_EOL;
+	echo PHP_EOL;
+
+	$response = $alchemyapi->combined('text',$demo_text, null);
+
+	if ($response['status'] == 'OK') {
+		echo '## Response Object ##', PHP_EOL;
+		echo print_r($response);
+
+		echo PHP_EOL;
+		
+		echo '## Keywords ##', PHP_EOL;
+		foreach ($response['keywords'] as $keyword) {
+		  echo $keyword['text'], ' : ', $keyword['relevance'], PHP_EOL;
+		}
+		echo PHP_EOL;
+		
+		echo '## Concepts ##', PHP_EOL;
+		foreach ($response['concepts'] as $concept) {
+		  echo $concept['text'], ' : ', $concept['relevance'], PHP_EOL;
+		}
+		echo PHP_EOL;
+
+		echo '## Entities ##', PHP_EOL;
+		foreach ($response['entities'] as $entity) {
+		  echo $entity['type'], ' : ', $entity['text'], ' , ', $entity['relevance'], PHP_EOL;
+		}
+		echo PHP_EOL;
+	} else {
+		echo 'Error in the taxonomy call: ', $response['statusInfo'];
+	}
+		
+	echo PHP_EOL;
+	echo PHP_EOL;
+
 ?>
