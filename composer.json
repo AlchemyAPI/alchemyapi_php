@@ -1,5 +1,5 @@
 {
-    "name": "alchemyai/alchemyapi_php",
+    "name": "alchemyapi/alchemyapi_php",
     "type": "sdk",
     "description": "A software development kit (sdk) for AlchemyAPI using PHP",
     "keywords": ["alchemyapi","alchemyai","php","ai","sdk"],
