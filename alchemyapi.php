@@ -740,7 +740,11 @@ class AlchemyAPI {
 		try {
 			$fp = @fopen($url, 'rb',false, stream_context_create($header));
 			$response = @stream_get_contents($fp);
-			fclose($fp);
+			
+			if($fp) {
+				fclose($fp);
+			}
+			
 			return json_decode($response, true);
 		} catch (Exception $e) {
 			return array('status'=>'ERROR', 'statusInfo'=>'Network error');
